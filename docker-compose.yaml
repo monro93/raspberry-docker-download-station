@@ -3,7 +3,7 @@ version: '3.7'
 services:
   radarr:
     container_name: pidownload-radarr
-    image: dtroncy/rpi-radarr
+    image: dtroncy/rpi-radarr:latest
     restart: unless-stopped
     volumes:
       - /etc/localtime:/etc/localtime:ro
@@ -12,5 +12,5 @@ services:
       - /mnt/usb-disk/pidownloads/pelis:/volumes/media
       #folder to downloads
       - /mnt/usb-disk/pidownloads:/volumes/download
-    expose:
+    ports:
       - 7878:7878
