@@ -7,10 +7,21 @@ services:
     restart: unless-stopped
     volumes:
       - /etc/localtime:/etc/localtime:ro
+      - ${DOWNLOADS_FOLDER}:/volumes/download
+      - ${MOVIES_FOLDER}:/volumes/media
       - ./docker/radarr_config:/volumes/config
-      #folder to movies
-      - /mnt/usb-disk/pidownloads/pelis:/volumes/media
-      #folder to downloads
-      - /mnt/usb-disk/pidownloads:/volumes/download
     ports:
       - 7878:7878
+
+  transmission:
+    container_name: pidownload-transmission
+    image: jaymoulin/transmission
+    restart: unless-stopped
+    command: my-daemon -c /to_download -w /output -T -b --no-incomplete-dir -O -Y -a '*.*.*.*' --utp -M -ep -f -g /config
+    ports:
+      - 9091:9091
+      - 51413:51413
+    volumes:
+      - /data/transmission/to_download:/to_download
+      - ${DOWNLOADS_FOLDER}:/output
+      - ./docker/transmission_config:/config
