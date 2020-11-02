@@ -25,3 +25,16 @@ services:
       - /data/transmission/to_download:/to_download
       - ${DOWNLOADS_FOLDER}:/output
       - ./docker/transmission_config:/config
+
+  rpi-samba:
+    container_name: pidownload-samba
+    image: trnape/rpi-samba
+    restart: unless-stopped
+    volumes:
+      - ${DOWNLOADS_FOLDER}:/share/data
+    entrypoint: ["/run.sh", "-u", "guest:guest", "-s", "Raspberry:/share/data:rw:guest"]
+    ports:
+      - '445:445'
+      - '139:139'
+      - '137:137/udp'
+      - '138:138/udp'
