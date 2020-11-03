@@ -38,3 +38,19 @@ services:
       - '139:139'
       - '137:137/udp'
       - '138:138/udp'
+
+  minidlna:
+    container_name: pidownload-minidlna
+    image: cytomich/rpi-docker-minidlna
+    restart: unless-stopped
+    volumes:
+      - ${MOVIES_FOLDER}:/media/movies
+      - ${SERIES_FOLDER}:/media/series
+    environment:
+      - MINIDLNA_MEDIA_DIR=V,/media
+      - MINIDLNA_PORT=8200
+      - MINIDLNA_FRIENDLY_NAME=raspberry
+    network_mode: "host"
+    ports:
+      - '8200:8200'
+      - '1900:1900/udp'
