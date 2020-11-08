@@ -1,6 +1,7 @@
 version: '3.7'
 
 services:
+  #Content providers
   jackett:
     container_name: pidownload-jackett
     image: ghcr.io/linuxserver/jackett
@@ -8,7 +9,7 @@ services:
     environment:
       - TZ=Europe/Berlin
       - AUTO_UPDATE=true
-     # - RUN_OPTS=<run options here>
+      # - RUN_OPTS=<run options here>
     volumes:
       - ${DOWNLOADS_FOLDER}:/downloads
       - ./docker/jackett_config:/config
@@ -27,6 +28,7 @@ services:
     ports:
       - 7878:7878
 
+  #Downloaders
   transmission:
     container_name: pidownload-transmission
     image: jaymoulin/transmission
@@ -40,13 +42,28 @@ services:
       - ${DOWNLOADS_FOLDER}:/output
       - ./docker/transmission_config:/config
 
+  jdownloader:
+    container_name: pidownload-jdownloader
+    image: jaymoulin/jdownloader
+    restart: unless-stopped
+    volumes:
+      - ${DOWNLOADS_FOLDER}:/opt/JDownloader/Downloads
+      - ./docker/jdownloader_config:/opt/JDownloader/cfg
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      MYJD_DEVICE_NAME: raspberry
+      XDG_DOWNLOAD_DIR: /opt/JDownloader/Downloads
+    ports:
+      - 3129:3129
+
+  #Network sharers
   rpi-samba:
     container_name: pidownload-samba
     image: trnape/rpi-samba
     restart: unless-stopped
     volumes:
       - ${DOWNLOADS_FOLDER}:/share/data
-    entrypoint: ["/run.sh", "-u", "guest:guest", "-s", "Raspberry:/share/data:rw:guest"]
+    entrypoint: [ "/run.sh", "-u", "guest:guest", "-s", "Raspberry:/share/data:rw:guest" ]
     ports:
       - '445:445'
       - '139:139'
