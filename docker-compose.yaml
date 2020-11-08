@@ -1,6 +1,20 @@
 version: '3.7'
 
 services:
+  jackett:
+    container_name: pidownload-jackett
+    image: ghcr.io/linuxserver/jackett
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Berlin
+      - AUTO_UPDATE=true
+     # - RUN_OPTS=<run options here>
+    volumes:
+      - ${DOWNLOADS_FOLDER}:/downloads
+      - ./docker/jackett_config:/config
+    ports:
+      - 9117:9117
+
   radarr:
     container_name: pidownload-radarr
     image: dtroncy/rpi-radarr:latest
