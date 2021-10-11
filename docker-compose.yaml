@@ -85,3 +85,20 @@ services:
     ports:
       - '8200:8200'
       - '1900:1900/udp'
+
+  plex:
+    container_name: pidownload-plex
+    image: lscr.io/linuxserver/plex
+    restart: unless-stopped
+    volumes:
+      - ./docker/plex_config:/config
+      - ${SERIES_FOLDER}:/tv
+      - ${MOVIES_FOLDER}:/movies
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - VERSION=docker
+    network_mode: "host"
+    privileged: true
+    ports:
+      - '32400:32400'
