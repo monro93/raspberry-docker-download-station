@@ -18,13 +18,12 @@ services:
 
   radarr:
     container_name: pidownload-radarr
-    image: dtroncy/rpi-radarr:latest
+    image: lscr.io/linuxserver/radarr
     restart: unless-stopped
     volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - ${DOWNLOADS_FOLDER}:/volumes/download
-      - ${MOVIES_FOLDER}:/volumes/media
-      - ./docker/radarr_config:/volumes/config
+      - ${DOWNLOADS_FOLDER}:/download
+      - ${MOVIES_FOLDER}:/movies
+      - ./docker/radarr_config:/config
     ports:
       - 7878:7878
 
