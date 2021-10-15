@@ -41,18 +41,20 @@ services:
       - 8989:8989
 
   #Downloaders
-  transmission:
-    container_name: pidownload-transmission
-    image: jaymoulin/transmission
-    restart: unless-stopped
-    command: my-daemon -c /to_download -w /output -T -b --no-incomplete-dir -O -Y -a '*.*.*.*' --utp -M -ep -f -g /config
-    ports:
-      - 9091:9091
-      - 51413:51413
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent
+    container_name: pidownload-qbittorrent
+    environment:
+      - TZ=Europe/Berlin
+      - WEBUI_PORT=9091
     volumes:
-      - /data/transmission/to_download:/to_download
-      - ${DOWNLOADS_FOLDER}:/output
-      - ./docker/transmission_config:/config
+      - ./docker/qbittorrent_config:/config
+      - ${DOWNLOADS_FOLDER}:/downloads
+    ports:
+      - 6881:6881
+      - 6881:6881/udp
+      - 9091:9091
+    restart: unless-stopped
 
   jdownloader:
     container_name: pidownload-jdownloader
