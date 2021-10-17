@@ -116,3 +116,25 @@ services:
     privileged: true
     ports:
       - '32400:32400'
+
+  jellyfin:
+      image: lscr.io/linuxserver/jellyfin
+      container_name: pidownload-jellyfin
+      environment:
+        - PUID=1000
+        - PGID=1000
+        - TZ=Europe/Berlin
+        - JELLYFIN_PublishedServerUrl=192.168.1.137
+      volumes:
+        - ./docker/jellyfin_config:/config
+        - ${SERIES_FOLDER}:/data/tvshows
+        - ${MOVIES_FOLDER}:/data/movies
+        - /opt/vc/lib:/opt/vc/lib
+      ports:
+        - '8096:8096'
+        - '7359:7359/udp'
+      devices:
+        - /dev/video10:/dev/video10
+        - /dev/video11:/dev/video11
+        - /dev/video12:/dev/video12
+      restart: unless-stopped
