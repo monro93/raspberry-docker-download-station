@@ -40,6 +40,18 @@ services:
     ports:
       - 8989:8989
 
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:v2.0.2
+    container_name: pidownload-flaresolverrn
+    environment:
+      - LOG_LEVEL=info
+      - LOG_HTML=false
+      - CAPTCHA_SOLVER=none
+      - TZ=Europe/Berlin
+    ports:
+      - "8191:8191"
+    restart: unless-stopped 
+
   #Downloaders
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent
