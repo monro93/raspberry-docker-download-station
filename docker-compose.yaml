@@ -34,7 +34,7 @@ services:
     environment:
       - TZ=Europe/Berlin
     volumes:
-      - ./docker/sonarr_config
+      - ./docker/sonarr_config:/config
       - ${SERIES_FOLDER}:/tv
       - ${DOWNLOADS_FOLDER}:/download
     ports:
@@ -71,13 +71,12 @@ services:
       - 3129:3129
 
   #Network sharers
-  rpi-samba:
-    container_name: pidownload-samba
-    image: trnape/rpi-samba
+  samba:
+    container_name: samba
+    image: lordpedal/samba
     restart: unless-stopped
     volumes:
-      - ${DOWNLOADS_FOLDER}:/share/data
-    entrypoint: [ "/run.sh", "-u", "guest:guest", "-s", "Raspberry:/share/data:rw:guest" ]
+       - ${DOWNLOADS_FOLDER}:/lordpedal
     ports:
       - '445:445'
       - '139:139'
@@ -86,7 +85,7 @@ services:
 
   minidlna:
     container_name: pidownload-minidlna
-    image: cytomich/rpi-docker-minidlna
+    image: lordpedal/minidlna
     restart: unless-stopped
     volumes:
       - ${MOVIES_FOLDER}:/media/movies
@@ -94,11 +93,9 @@ services:
     environment:
       - MINIDLNA_MEDIA_DIR=V,/media
       - MINIDLNA_PORT=8200
-      - MINIDLNA_FRIENDLY_NAME=raspberry
+      - MINIDLNA_FRIENDLY_NAME=minipc
+      - MINIDLNA_INOTIFY=yes
     network_mode: "host"
-    ports:
-      - '8200:8200'
-      - '1900:1900/udp'
 
   plex:
     container_name: pidownload-plex
@@ -124,7 +121,7 @@ services:
         - PUID=1000
         - PGID=1000
         - TZ=Europe/Berlin
-        - JELLYFIN_PublishedServerUrl=192.168.1.137
+        - JELLYFIN_PublishedServerUrl=192.168.1.141
       volumes:
         - ./docker/jellyfin_config:/config
         - ${SERIES_FOLDER}:/data/tvshows
@@ -134,7 +131,13 @@ services:
         - '8096:8096'
         - '7359:7359/udp'
       devices:
-        - /dev/video10:/dev/video10
-        - /dev/video11:/dev/video11
-        - /dev/video12:/dev/video12
+        - /dev/dri:/dev/dri
+          # - /dev/video10:/dev/video10
+          # - /dev/video11:/dev/video11
+          #- /dev/video12:/dev/video12
       restart: unless-stopped
+
+networks:
+  default:
+    name: minipc
+    external: true
