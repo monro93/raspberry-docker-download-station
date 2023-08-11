@@ -2,19 +2,18 @@ version: '3.7'
 
 services:
   #Content providers
-  jackett:
-    container_name: pidownload-jackett
-    image: ghcr.io/linuxserver/jackett
-    restart: unless-stopped
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
     environment:
+      - PUID=1000
+      - PGID=1000
       - TZ=Europe/Berlin
-      - AUTO_UPDATE=true
-      # - RUN_OPTS=<run options here>
     volumes:
-      - ${DOWNLOADS_FOLDER}:/downloads
-      - ./docker/jackett_config:/config
+      - ./docker/prowlarr:/config
     ports:
-      - 9117:9117
+      - 9696:9696
+    restart: unless-stopped
 
   radarr:
     container_name: pidownload-radarr
@@ -39,6 +38,22 @@ services:
       - ${DOWNLOADS_FOLDER}:/download
     ports:
       - 8989:8989
+
+  #Subtitles
+  bazarr:
+    container_name: pidownload-bazarr
+    image: lscr.io/linuxserver/bazarr:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+    volumes:
+      - ./docker/bazarr_config:/config
+      - ${MOVIES_FOLDER}:/movies #optional
+      - ${SERIES_FOLDER}:/tv #optional
+    ports:
+      - 6767:6767
+    restart: unless-stopped
 
   #Downloaders
   qbittorrent:
